@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  TaskListViewController.swift
 //  JustDoIt
 //
 //  Created by Ogheneorobo on 6/13/17.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate{
+class TaskListViewController: UIViewController, UITableViewDataSource, UITableViewDelegate{
 
     @IBOutlet weak var bgImage: UIImageView!
     @IBOutlet weak var tblTasks: UITableView!
@@ -17,7 +17,6 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        self.title = "JustDoIt✔️"
         self.tblTasks.tableFooterView = UIView()
         
         tasks = createTasks()
@@ -68,7 +67,14 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         tasks.append(task3)
         return tasks
     }
-
-
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let nextVC = segue.destination as! AddTaskViewController
+        nextVC.previousVC = self
+    }
+    
+    @IBAction func addClicked(_ sender: Any) {
+        performSegue(withIdentifier: "taskSegue", sender: nil)
+    }
 }
 

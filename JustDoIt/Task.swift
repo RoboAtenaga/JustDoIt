@@ -17,4 +17,8 @@ class Task {
         self.name = name
         self.isImportant = isImportant
     }
+    
+    init() {
+        
+    }
 }
