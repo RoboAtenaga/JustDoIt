@@ -14,7 +14,7 @@ class AddTaskViewController: UIViewController {
     @IBOutlet weak var switchImp: UISwitch!
     @IBOutlet weak var txtName: UITextField!
     
-    var previousVC = TaskListViewController()
+//    var previousVC = TaskListViewController()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,23 +22,27 @@ class AddTaskViewController: UIViewController {
         // Do any additional setup after loading the view.
         addBlurEffect()
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
     @IBAction func addClicked(_ sender: Any) {
-        let task = Task();
+//        let task = Task();
+        
+        // Using CoreData to create new Task
+        //getting access to AppDelegate.swift and the NSManagedObjectContext
+        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        let task = Task(context: context)
         task.name = txtName.text!
         task.isImportant = switchImp.isOn
         
-        // Add task to list
-        previousVC.tasks.append(task)
-        previousVC.tblTasks.reloadData()
+        // Saving to CoreData
+        (UIApplication.shared.delegate as! AppDelegate).saveContext()
         
-        // Automatically go back to previousVC after adding
+//        // Add task to list without CoreData
+//        previousVC.tasks.append(task)
+//        previousVC.tblTasks.reloadData()
+//        
+//        // Automatically go back to previousVC after adding
         navigationController!.popViewController(animated: true)
+
     }
     
     func addBlurEffect(){

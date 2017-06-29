@@ -10,26 +10,26 @@ import UIKit
 
 class TaskListViewController: UIViewController, UITableViewDataSource, UITableViewDelegate{
 
-    @IBOutlet weak var bgImage: UIImageView!
     @IBOutlet weak var tblTasks: UITableView!
     
     var tasks: [Task] = []
-    var selectedIndex = 0;
+    //var selectedIndex = 0;
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         self.tblTasks.tableFooterView = UIView()
         
-        tasks = createTasks()
+        //tasks = createTasks()
         
         tblTasks.dataSource = self
         tblTasks.delegate = self
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    
+    // this function gets called every time the VC will show up, not only at first run
+    override func viewWillAppear(_ animated: Bool) {
+        getTasksFromCoreData()
+        tblTasks.reloadData()
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -40,10 +40,10 @@ class TaskListViewController: UIViewController, UITableViewDataSource, UITableVi
         let cell = UITableViewCell();
         let task = tasks[indexPath.row]
         if task.isImportant{
-            cell.textLabel?.text = "❗️\(task.name)"
+            cell.textLabel?.text = "❗️\(task.name!)"
         }
         else{
-            cell.textLabel?.text = task.name
+            cell.textLabel?.text = task.name!
         }
         
         cell.textLabel?.textColor = UIColor.white
@@ -52,7 +52,6 @@ class TaskListViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        selectedIndex = indexPath.row
         let task = tasks[indexPath.row]
         performSegue(withIdentifier: "deleteSegue", sender: task)
     }
@@ -61,26 +60,41 @@ class TaskListViewController: UIViewController, UITableViewDataSource, UITableVi
         cell.backgroundColor = UIColor.clear
     }
     
-    func createTasks() -> [Task] {
-        var tasks: [Task] = []
-        let task1 = Task(name: "Do laundry", isImportant: true)
-        let task2 = Task(name: "Read a book", isImportant: false)
-        let task3 = Task(name: "Buy fruits", isImportant: true)
-        tasks.append(task1)
-        tasks.append(task2)
-        tasks.append(task3)
-        return tasks
+//    func createTasks() -> [Task] {
+//        var tasks: [Task] = []
+//        let task1 = Task(name: "Do laundry", isImportant: true)
+//        let task2 = Task(name: "Read a book", isImportant: false)
+//        let task3 = Task(name: "Buy fruits", isImportant: true)
+//        tasks.append(task1)
+//        tasks.append(task2)
+//        tasks.append(task3)
+//        return tasks
+//    }
+    
+    func getTasksFromCoreData() {
+        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        do{
+            tasks = try context.fetch(Task.fetchRequest()) as! [Task]
+        } catch {
+            print("Error! Oops!")
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "addSegue"{
-            let nextVC = segue.destination as! AddTaskViewController
-            nextVC.previousVC = self
-        }
+//        if segue.identifier == "addSegue"{
+//            let nextVC = segue.destination as! AddTaskViewController
+//            nextVC.previousVC = self
+//        }
+//        if segue.identifier == "deleteSegue"{
+//            let nextVC = segue.destination as! CompleteTaskViewController
+//            nextVC.task = sender as! Task
+//            nextVC.previousVC = self
+//        }
+        
+        // Using CoreData
         if segue.identifier == "deleteSegue"{
             let nextVC = segue.destination as! CompleteTaskViewController
-            nextVC.task = sender as! Task
-            nextVC.previousVC = self
+            nextVC.task = sender as? Task
         }
     }
     
