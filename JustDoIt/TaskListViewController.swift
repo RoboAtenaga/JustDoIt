@@ -14,6 +14,8 @@ class TaskListViewController: UIViewController, UITableViewDataSource, UITableVi
     @IBOutlet weak var tblTasks: UITableView!
     
     var tasks: [Task] = []
+    var selectedIndex = 0;
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -49,9 +51,11 @@ class TaskListViewController: UIViewController, UITableViewDataSource, UITableVi
         return cell
     }
     
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        
-//    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        selectedIndex = indexPath.row
+        let task = tasks[indexPath.row]
+        performSegue(withIdentifier: "deleteSegue", sender: task)
+    }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         cell.backgroundColor = UIColor.clear
@@ -69,12 +73,19 @@ class TaskListViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let nextVC = segue.destination as! AddTaskViewController
-        nextVC.previousVC = self
+        if segue.identifier == "addSegue"{
+            let nextVC = segue.destination as! AddTaskViewController
+            nextVC.previousVC = self
+        }
+        if segue.identifier == "deleteSegue"{
+            let nextVC = segue.destination as! CompleteTaskViewController
+            nextVC.task = sender as! Task
+            nextVC.previousVC = self
+        }
     }
     
     @IBAction func addClicked(_ sender: Any) {
-        performSegue(withIdentifier: "taskSegue", sender: nil)
+        performSegue(withIdentifier: "addSegue", sender: nil)
     }
 }
 
